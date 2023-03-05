@@ -22,7 +22,6 @@ def parse_args():
     )
     return parser.parse_args()
 
-
 if __name__ == "__main__":
     arguments = vars(parse_args())
     do_train = arguments["train"]
@@ -53,12 +52,12 @@ if __name__ == "__main__":
 
     # evaluate
     plot_model(
-        "output/feature_extraction/loss_model1",
         "output/summary_with_regularization_early_stopping_bis.csv",
+        "output/feature_extraction/loss_model1",
     )
     plot_model(
-        "output/feature_extraction/loss_model2",
         "output/summary_freezed_network_gamma_01.csv",
+        "output/freezed_weights/loss_model2",
     )
 
     # statistics for trained models
