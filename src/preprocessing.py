@@ -22,7 +22,6 @@ plt.ion()  # interactive mode
 plt.style.use("ggplot")
 sns.set_theme(style="white")
 
-
 def preprocessing(data_dir, batch_size):
     data_transforms = {
         "train": transforms.Compose(
@@ -84,14 +83,12 @@ def preprocessing(data_dir, batch_size):
 
     return dataloaders, device, dataset_sizes, class_names
 
-
 def compute_labels(dataloaders, device):
     ls_labels = []
     for inputs, labels in dataloaders:
         labels = labels.to(device)
         ls_labels = [*ls_labels, *labels.tolist()]
     return ls_labels
-
 
 def compute_weights(labels):
     n_samples = len(labels)

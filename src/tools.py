@@ -3,6 +3,7 @@ from __future__ import division, print_function
 import matplotlib.pylab as plt
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import seaborn as sns
 import torch
 import torch.backends.cudnn as cudnn
@@ -15,7 +16,6 @@ cudnn.benchmark = True
 plt.ion()  # interactive mode
 sns.set_theme(style="white")
 
-
 def imshow(inp, title=None, normalize=True):
     inp = inp.numpy().transpose((1, 2, 0))
     if normalize:
@@ -27,7 +27,6 @@ def imshow(inp, title=None, normalize=True):
     if title is not None:
         plt.title(title)
     plt.pause(0.001)
-
 
 def visualize_model(model, dataloaders, class_names, device, num_images=6):
     was_training = model.training
@@ -58,8 +57,9 @@ def visualize_model(model, dataloaders, class_names, device, num_images=6):
                     return
         model.train(mode=was_training)
 
-
-def visualize_wrong_labels(model, device, dataloaders, class_names, num_images=8):
+def visualize_wrong_labels(
+    title, save_path, model, device, dataloaders, class_names, num_images=8
+):
     was_training = model.training
     model.eval()
     images_so_far = 0
@@ -90,17 +90,29 @@ def visualize_wrong_labels(model, device, dataloaders, class_names, num_images=8
                     std = np.array([0.229, 0.224, 0.225])
                     inp = std * inp + mean
                     inp = np.clip(inp, 0, 1)
+                    plt.suptitle(title, size=16)
                     plt.imshow(inp)
+                    plt.savefig(f"{save_path}.png")
         model.train(mode=was_training)
 
+def plot_model(path, save_path):
+    # read file
+    df = pd.read_csv(path, sep=";")
 
-def plot_model(train_loss, val_loss, title, y_label):
     plt.style.use("ggplot")
-    sns.lineplot(x=np.arange(len(train_loss)), y=train_loss, label="train")
-    sns.lineplot(x=np.arange(len(val_loss)), y=val_loss, label="validation")
-    plt.xlabel("epoch")
-    plt.ylabel(y_label)
-    plt.title(title)
-    plt.xlim(0, len(train_loss))
-    plt.grid(False)
+    fig, ax = plt.subplots(1, 2, sharex=True)
+    sns.lineplot(
+        x=np.arange(len(df)), y=df["f1_train_score_epoch"], label="train", ax=ax[0]
+    )
+    sns.lineplot(
+        x=np.arange(len(df)), y=df["f1_val_score_epoch"], label="validation", ax=ax[0]
+    )
+    sns.lineplot(x=np.arange(len(df)), y=df["train_losses"], label="train", ax=ax[1])
+    sns.lineplot(x=np.arange(len(df)), y=df["val_losses"], label="validation", ax=ax[1])
+    ax[0].set(ylabel="F1-score", title="F1 score")
+    ax[1].set(ylabel="Loss", title="Loss")
+    # Make common axis labels
+    fig.text(0.5, 0.04, "epoch", va="center", ha="center")
+    plt.xlim(0, len(df))
     plt.show()
+    plt.savefig(f"{save_path}.png")

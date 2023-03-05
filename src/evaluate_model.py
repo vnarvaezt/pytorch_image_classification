@@ -7,7 +7,6 @@ from sklearn.metrics import f1_score, precision_score, recall_score
 
 plt.style.use("ggplot")
 
-
 def make_prediction(dataloader, device, model):
     with torch.no_grad():
         y_true = []
@@ -21,7 +20,6 @@ def make_prediction(dataloader, device, model):
             y_pred.extend(predicted.tolist())
     return y_true, y_pred
 
-
 def compute_overall_metrics(y_true, y_pred):
     # macro option is used here bcs we care about each class equally
     model_f1 = f1_score(y_true, y_pred, average="macro")
@@ -30,7 +28,6 @@ def compute_overall_metrics(y_true, y_pred):
     print("Overall F1 score of the network is: %d %%" % (100 * model_f1))
     print("Overall weighted recall score is: %d %%" % (100 * model_recall))
     print("Overall weighted precison score is: %d %%" % (100 * model_precision))
-
 
 def compute_class_wise_stats(dataloader, device, model, class_names):
     # Class wise statistics
@@ -67,13 +64,14 @@ def compute_class_wise_stats(dataloader, device, model, class_names):
     for i in range(4):
         recall = TP[i] / TP_FN[i]
         precision = TP[i] / (TP[i] + FP[i])
-
-        print("Recall of %5s : %2d %%" % (class_names[i], 100 * recall))
+        print(
+            "%5s ==> Recall = %2d %%, Precision = %2d %%"
+            % (class_names[i], 100 * recall, 100 * precision)
+        )
         recall_all.append(recall)
-        print("Precision of %5s : %2d %%" % (class_names[i], 100 * precision))
+        # print("Precision of %5s : %2d %%" % (class_names[i], 100 * precision))
         precision_all.append(precision)
     return recall_all, precision_all
-
 
 def compute_confusion_mtx(dataloader, device, model, class_names):
     # Get the confusion matrix for testing data
@@ -88,20 +86,51 @@ def compute_confusion_mtx(dataloader, device, model, class_names):
 
     # Confusion matrix as a heatmap
     con_m = confusion_matrix.conf
-    df_con_m = pd.DataFrame(
+    df_conf_matrix = pd.DataFrame(
         con_m, index=[i for i in class_names], columns=[i for i in class_names]
     )
-    sns.set(font_scale=1.5)
-    sns.heatmap(
-        df_con_m, annot=True, fmt="g", annot_kws={"size": 10}, cbar=False, cmap="Greens"
+    return df_conf_matrix
+
+def evaluate_model(title, dataloaders, model, device, class_names, save_path):
+    print("===> train")
+    y_true_train, y_pred_train = make_prediction(dataloaders["train"], device, model)
+    compute_overall_metrics(y_true_train, y_pred_train)
+    compute_class_wise_stats(dataloaders["train"], device, model, class_names)
+    print("\n\n===> test")
+    y_true_test, y_pred_test = make_prediction(dataloaders["test"], device, model)
+    compute_overall_metrics(y_true_test, y_pred_test)
+    compute_class_wise_stats(dataloaders["test"], device, model, class_names)
+
+    df_conf_matrix_train = compute_confusion_mtx(
+        dataloaders["train"], device, model, class_names
     )
-    plt.xlabel("Predicted values")
-    plt.ylabel("True labels")
+    df_conf_matrix_test = compute_confusion_mtx(
+        dataloaders["test"], device, model, class_names
+    )
+
+    f, axes = plt.subplots(1, 2, figsize=(20, 5), sharey="row")
+
+    sns.heatmap(
+        df_conf_matrix_train,
+        annot=True,
+        fmt="g",
+        annot_kws={"size": 10},
+        cbar=False,
+        cmap="Greens",
+        ax=axes[0],
+    )
+    sns.heatmap(
+        df_conf_matrix_test,
+        annot=True,
+        fmt="g",
+        annot_kws={"size": 10},
+        cbar=False,
+        cmap="Greens",
+        ax=axes[1],
+    )
+    axes[0].set(ylabel="True label", title="Train")
+    axes[1].set(title="Test")
+    f.text(0.5, 0.04, "epoch", va="center", ha="center")
+    plt.suptitle(title)
     plt.show()
-
-
-def evaluate_model(dataloaders, model, device, class_names):
-    train_true, train_pred = make_prediction(dataloaders, device, model)
-    compute_overall_metrics(train_true, train_pred)
-    compute_class_wise_stats(dataloaders, device, model, class_names)
-    compute_confusion_mtx(dataloaders, device, model, class_names)
+    plt.savefig(f"{save_path}.png")
