@@ -16,6 +16,7 @@ cudnn.benchmark = True
 plt.ion()  # interactive mode
 sns.set_theme(style="white")
 
+
 def imshow(inp, title=None, normalize=True):
     inp = inp.numpy().transpose((1, 2, 0))
     if normalize:
@@ -27,6 +28,7 @@ def imshow(inp, title=None, normalize=True):
     if title is not None:
         plt.title(title)
     plt.pause(0.001)
+
 
 def visualize_model(model, dataloaders, class_names, device, num_images=6):
     was_training = model.training
@@ -56,6 +58,7 @@ def visualize_model(model, dataloaders, class_names, device, num_images=6):
                     model.train(mode=was_training)
                     return
         model.train(mode=was_training)
+
 
 def visualize_wrong_labels(
     title, save_path, model, device, dataloaders, class_names, num_images=8
@@ -94,6 +97,7 @@ def visualize_wrong_labels(
                     plt.imshow(inp)
                     plt.savefig(f"{save_path}.png")
         model.train(mode=was_training)
+
 
 def plot_model(path, save_path):
     # read file

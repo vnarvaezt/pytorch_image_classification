@@ -1,17 +1,17 @@
 # Tranfer Learning for Garbage Classification
 
 ## General info
-This project classifies images using transfer learning. The pre-trained model use is ResNet-18.
-The main scenarios for trarnsfer learning are:
-1. Pre-trained models: In this scenario, a model is trained on a large dataset or task,
- and then the model's weights are fine-tuned on a smaller, related dataset or task. 
+This project classifies images using transfer learning. The pre-trained model used is ResNet-18.
+2 scenarios were tested:
+1. Pre-trained model: In this scenario, a model is trained on a large dataset or task,
+ and then the model's weights are fine-tuned on a smaller, related dataset. 
  A pre-trained image classification model like ResNet-18 is fine-tuned on a smaller
   dataset of images related to a specific domain of garbage classification.
   
 2. Domain adaptation: In this scenario, we assume that the garbage classification domain
-is different than the domain of the pre-trained model, and the goal is to adapt the model's knowledge from the source domain to improve performance
- on the target domain. This involved retraining the last layers of the model, and adding additional layers
- to better capture the features of the target domain.
+is different than the pre-trained model. The goal is to adapt the model's knowledge from the source domain to improve performance on the target domain. This involved retraining the last layers of the model, and adding additional layers.
+
+Without surprise, the 1st method is faster and shows better results than the 2nd.
 
 
 ## Technologies

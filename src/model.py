@@ -137,6 +137,7 @@ def train_model(
 
     return model
 
+
 def feature_extractor(device, dataloaders, dataset_sizes, num_epochs):
     model_ft = models.resnet18(pretrained=True)
     num_ftrs = model_ft.fc.in_features
@@ -174,6 +175,7 @@ def feature_extractor(device, dataloaders, dataset_sizes, num_epochs):
     )
 
     return model_ft
+
 
 def freezed_feature_extractor(device, dataloaders, dataset_sizes, num_epochs):
     model_conv = torchvision.models.resnet18(pretrained=True)

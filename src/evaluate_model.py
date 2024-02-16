@@ -7,6 +7,7 @@ from sklearn.metrics import f1_score, precision_score, recall_score
 
 plt.style.use("ggplot")
 
+
 def make_prediction(dataloader, device, model):
     with torch.no_grad():
         y_true = []
@@ -20,6 +21,7 @@ def make_prediction(dataloader, device, model):
             y_pred.extend(predicted.tolist())
     return y_true, y_pred
 
+
 def compute_overall_metrics(y_true, y_pred):
     # macro option is used here bcs we care about each class equally
     model_f1 = f1_score(y_true, y_pred, average="macro")
@@ -28,6 +30,7 @@ def compute_overall_metrics(y_true, y_pred):
     print("Overall F1 score of the network is: %d %%" % (100 * model_f1))
     print("Overall weighted recall score is: %d %%" % (100 * model_recall))
     print("Overall weighted precison score is: %d %%" % (100 * model_precision))
+
 
 def compute_class_wise_stats(dataloader, device, model, class_names):
     # Class wise statistics
@@ -73,6 +76,7 @@ def compute_class_wise_stats(dataloader, device, model, class_names):
         precision_all.append(precision)
     return recall_all, precision_all
 
+
 def compute_confusion_mtx(dataloader, device, model, class_names):
     # Get the confusion matrix for testing data
     confusion_matrix = cm.ConfusionMeter(4)
@@ -90,6 +94,7 @@ def compute_confusion_mtx(dataloader, device, model, class_names):
         con_m, index=[i for i in class_names], columns=[i for i in class_names]
     )
     return df_conf_matrix
+
 
 def evaluate_model(title, dataloaders, model, device, class_names, save_path):
     print("===> train")
