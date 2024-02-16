@@ -8,6 +8,7 @@ do_train = False
 
 STEPS = ["TRAIN", "EVALUATE"]
 
+
 def make_dir(root_path, new_directory):
     try:
         output_path = os.path.join(root_path, new_directory)
@@ -17,6 +18,7 @@ def make_dir(root_path, new_directory):
             os.makedirs(output_path)
     except Exception as error:
         print(error)
+
 
 make_dir(ROOT_DIR, "output/feature_extraction")
 make_dir(ROOT_DIR, "output/freezed_weights")
